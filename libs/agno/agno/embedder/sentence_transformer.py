@@ -24,8 +24,9 @@ except ImportError:
 class SentenceTransformerEmbedder(Embedder):
     id: str = "sentence-transformers/all-MiniLM-L6-v2"
     sentence_transformer_client: Optional[SentenceTransformer] = None
+    model: Optional[SentenceTransformer] = None
 
-    def load_model(self):
+    def __post_init__(self):
         self.model = SentenceTransformer(model_name_or_path=self.id)
 
     def get_embedding(self, text: Union[str, List[str]]) -> List[float]:

@@ -1,5 +1,15 @@
 """
-1. Make sure to install sentence-transformers (uv pip install sentence-transformers) and pandas
+Make sure to install following packages:
+1. sentence-transformers: `uv pip install sentence-transformers`
+2. Pandas: `uv pip install pandas`
+
+Also, make sure to run the redis db server via the following command:
+`sudo docker run -d --name redis-vl -p <port>:<port> redis/redis-stack-server:latest`
+
+If you already have a container created use:
+`sudo docker start <container-id>`
+
+If you choose a differnet port, make sure to mention in the Redis() class defined below. By default it connects to 6379.
 """
 
 import pandas as pd
@@ -41,6 +51,8 @@ documents = create_document(
 
 
 vector_db = Redis(
+    port=6379,
+    host="localhost",
     index_name="Quora",
     algorithm="hnsw",
     distance_metric="cosine",

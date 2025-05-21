@@ -25,9 +25,12 @@ class SentenceTransformerEmbedder(Embedder):
     id: str = "sentence-transformers/all-MiniLM-L6-v2"
     sentence_transformer_client: Optional[SentenceTransformer] = None
 
+    def load_model(self):
+        self.model = SentenceTransformer(model_name_or_path=self.id)
+
     def get_embedding(self, text: Union[str, List[str]]) -> List[float]:
-        model = SentenceTransformer(model_name_or_path=self.id)
-        embedding = model.encode(text)
+        
+        embedding = self.model.encode(text)
         try:
             return embedding  # type: ignore
         except Exception as e:

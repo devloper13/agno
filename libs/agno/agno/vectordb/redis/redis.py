@@ -37,8 +37,6 @@ class Redis(VectorDb):
                 embedder = SentenceTransformerEmbedder()
                 self.dimensions = self.embedder.dimensions
 
-            embedder.load_model()
-
             log_info("Embedder not provided, using SentenceTransformer as default.")
         self.embedder: Embedder = embedder
 

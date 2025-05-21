@@ -29,7 +29,6 @@ class SentenceTransformerEmbedder(Embedder):
         self.model = SentenceTransformer(model_name_or_path=self.id)
 
     def get_embedding(self, text: Union[str, List[str]]) -> List[float]:
-        
         embedding = self.model.encode(text)
         try:
             return embedding  # type: ignore

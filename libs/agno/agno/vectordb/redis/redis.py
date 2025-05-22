@@ -40,9 +40,11 @@ class Redis(VectorDb):
             log_info("Embedder not provided, using SentenceTransformer as default.")
         self.embedder: Embedder = embedder
 
+        self.host=host
         if host is None:
             log_info("Since no host was provided, host will be set to localhost")
             self.host = "localhost"
+        
         self.port = port
         self.redis_url = f"redis://{self.host}:{self.port}"
         log_info(f"The redis url is set as {self.redis_url}")
@@ -157,16 +159,23 @@ class Redis(VectorDb):
         return await super().async_search(query, limit, filters)
 
     def delete(self) -> bool:
-        try:
-            self.index.delete(drop=True)
-            log_info("Index deleted")
-        except:
-            log_info("Something went wrong in deleting the index")
-            return False
-        return True
+        """
+        Clear all records
+        """
+        deleted_records = self.index.clear()
+        if deleted_records:
+            return True
+        return False
 
     def drop(self) -> None:
-        return self.index.create(overwrite=True, drop=True)
+        """
+        Delete Collection
+        """
+        try:
+            self.index.delete(drop=True)
+            log_info("Collections deleted")
+        except:
+            log_info("Something went wrong in deleting the collection")
 
     async def async_drop(self) -> None:
         return await super().async_drop()
@@ -174,6 +183,10 @@ class Redis(VectorDb):
     def exists(self) -> bool:
         if not self.index.exists():
             return False
+        return True
+        
+    def upsert_available(self) -> bool:
+        """Indicate that upsert functionality is available."""
         return True
 
     async def async_exists(self) -> bool:

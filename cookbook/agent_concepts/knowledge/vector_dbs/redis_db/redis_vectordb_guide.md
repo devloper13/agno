@@ -79,7 +79,7 @@ vector_db = Redis(
 
 ```python
 knowledge_base = SingleCSVKnowledgeBase(
-    path="/home/yashm94/Projects/Redis/RedisVL/dataset/questions.csv",
+    path=<your/path>,
     vector_db=vector_db
 )
 ```
@@ -118,9 +118,3 @@ agent.print_response(
     markdown=True
 )
 ```
-
----
-
-## ✅ Summary
-
-This setup enables a robust and extensible way to embed question-answer datasets, store them in Redis as vectors, and retrieve them using semantic similarity — all while integrating with LLM-based agents like Agno for intelligent querying.

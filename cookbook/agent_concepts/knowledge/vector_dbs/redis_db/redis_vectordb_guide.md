@@ -96,7 +96,7 @@ knowledge_base.load(recreate=True, upsert=True, skip_existing=True)
 
 ---
 
-## 🤖 Agno Agent Integration (Optional)
+## 🤖 Agno Agent Integration
 
 You can integrate the vector DB with an Agno Agent for semantic search:
 

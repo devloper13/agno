@@ -15,7 +15,9 @@ If you choose a differnet port, make sure to mention in the Redis() class define
 import pandas as pd
 from agno.document import Document
 from agno.vectordb.redis import Redis
-
+from agno.knowledge.singlecsv import SingleCSVKnowledgeBase
+from agno.agent import Agent
+from agno.models.openai.responses import OpenAIResponses
 
 """
 In this example we will process a csv files consisting of Quora like questions. The csv files consists of question1, question2 and similarity as columns.
@@ -32,23 +34,9 @@ Available operations:
 6. Search for a vector using a query embedding
 """
 
-
-def create_document(csv_path):
-    """
-    Loads Quora dataset and drops nulls.
-    """
-    df = pd.read_csv(csv_path).dropna(subset=["question1", "question2"])
-    df = df.head(100)  # Remove later - Only for testing
-
-    documents = [Document(row.question1) for row in df.itertuples(index=False)]
-
-    return documents
-
-
-documents = create_document(
-    "/home/yashm94/Projects/Redis/RedisVL/dataset/questions.csv"
-)
-
+"""
+Creating Redis vector db
+"""
 
 vector_db = Redis(
     port=6379,
@@ -59,35 +47,28 @@ vector_db = Redis(
     dims=384,
 )
 
-query = "I'm a 19-year-old. How can I improve my skills or what should I do to become an entrepreneur in the next few years?"
+"""
+Testing database operations via custom csv knowledgebase (loads only top 100 rows)
+"""
+knowledge_base = SingleCSVKnowledgeBase(
+    path="/home/yashm94/Projects/Redis/RedisVL/dataset/questions.csv",
+    vector_db=vector_db
+)
 
-vector_db.drop()  # Dropping all keys from an existing index
-if not vector_db.exists():  # Checking if an Index exists
-    vector_db.create()  # Creating an Index
-vector_db.insert(documents)  # Inserting documents/records into the index
-results = vector_db.search(
-    query=query, limit=3
-)  # Searching for similar vector via query vector
-for (
-    result
-) in results:  # printing top k values where k is the limit set in `search` above
-    print(result.content)
+knowledge_base.load(recreate=True, upsert=True, skip_existing=True)
+
 
 """
-Test Redis integration with Agno's agentic framework.
+Testing Agno Agent Integration
 """
 
-# from agno.knowledge.agent import AgentKnowledge
-# from agno.agent import Agent
-# from agno.vectordb.search import SearchType
+agent = Agent(
+    model=OpenAIResponses(id="gpt-4o-mini"),
+    knowledge=knowledge_base,
+    search_knowledge=True,
+    show_tool_calls=True,
+)
 
-# knowledge_base = AgentKnowledge(
-#     vector_db=vector_db,
-# )
+agent.print_response("Retrieve closest sentence to `Why are rockets and boosters painted white?` from your knowledge base", markdown=True)
+agent.print_response("Retrieve closest sentence to `How can I see all my Youtube comments?` from your knowledge base", markdown=True)
 
-# agent = Agent(
-#     knowledge=knowledge_base,
-#     search_knowledge=True,
-#     show_tool_calls=True,
-# )
-# agent.print_response("How to make Thai curry?", markdown=True)

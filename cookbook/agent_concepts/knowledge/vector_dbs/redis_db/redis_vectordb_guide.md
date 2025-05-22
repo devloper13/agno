@@ -1,4 +1,4 @@
-# Redis VectorDB with Sentence Transformers: Indexing & Querying Quora-style Questions
+# Using Redis Vector DB with Agno
 
 This guide walks you through the process of setting up a Redis vector database to index and search Quora-style questions using the `sentence-transformers` library. You'll also learn how to integrate this with an agent like Agno for querying.
 
